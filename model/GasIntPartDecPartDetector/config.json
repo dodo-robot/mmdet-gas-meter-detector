@@ -1,0 +1,112 @@
+{
+   "name": "GasIntPartDecPartDetector",
+   "platform": "onnxruntime_onnx",
+   "max_batch_size": 8,
+   "dynamic_batching": {
+      "preferred_batch_size": [
+         2,
+         4,
+         8
+      ],
+      "max_queue_delay_microseconds": 100000
+   },
+   "input": [
+      {
+         "name": "input",
+         "data_type": "TYPE_FP32",
+         "dims": [
+            3,
+            -1,
+            -1
+         ]
+      }
+   ],
+   "output": [
+      {
+         "name": "dets",
+         "data_type": "TYPE_FP32",
+         "dims": [
+            -1,
+            -1
+         ]
+      },
+      {
+         "name": "labels",
+         "data_type": "TYPE_INT64",
+         "dims": [
+            -1
+         ]
+      },
+      {
+         "name": "masks",
+         "data_type": "TYPE_FP32",
+         "dims": [
+            -1,
+            -1,
+            -1
+         ]
+      }
+   ],
+   "parameters": {
+      "key": "labels",
+      "labels": {
+         "string_value": "PARTE_INTERA,PARTE_DECIMALE"
+      }
+   },
+   "score_thr": 0.7,
+   "preprocess_pipeline": [
+      {
+         "type": "LoadImageFromWebcam"
+      },
+      {
+         "type": "MultiScaleFlipAug",
+         "img_scale": [
+            1333,
+            800
+         ],
+         "flip": false,
+         "transforms": [
+            {
+               "type": "Resize",
+               "keep_ratio": true
+            },
+            {
+               "type": "Normalize",
+               "mean": [
+                  123.675,
+                  116.28,
+                  103.53
+               ],
+               "std": [
+                  58.395,
+                  57.12,
+                  57.375
+               ],
+               "to_rgb": true
+            },
+            {
+               "type": "Pad",
+               "size_divisor": 32
+            },
+            {
+               "type": "DefaultFormatBundle"
+            },
+            {
+               "type": "Collect",
+               "keys": [
+                  "img"
+               ],
+               "meta_keys": [
+                  "filename",
+                  "ori_filename",
+                  "ori_shape",
+                  "img_shape",
+                  "pad_shape",
+                  "scale_factor",
+                  "img_norm_cfg"
+               ]
+            }
+         ]
+      }
+   ]
+}

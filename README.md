@@ -1,0 +1,1 @@
+tar cvzf models.tar.gz *
